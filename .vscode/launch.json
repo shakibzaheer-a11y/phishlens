@@ -1,0 +1,50 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🛡️ PhishLens: Launch Web Dashboard",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run_web.py",
+      "console": "integratedTerminal",
+      "args": ["--port", "8080"]
+    },
+    {
+      "name": "🔍 PhishLens: Scan M365 Phishing Sample (CLI)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run_cli.py",
+      "console": "integratedTerminal",
+      "args": [
+        "samples/phishing/m365_credential_harvest.eml",
+        "--html",
+        "report_m365.html",
+        "--json",
+        "report_m365.json"
+      ]
+    },
+    {
+      "name": "📎 PhishLens: Scan Fake Invoice Trojan (CLI)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run_cli.py",
+      "console": "integratedTerminal",
+      "args": ["samples/phishing/fake_invoice_malware.eml"]
+    },
+    {
+      "name": "📊 PhishLens: Run ML Evaluation Benchmark",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/evaluate.py",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "🧪 PhishLens: Run Pytest Suite",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "args": ["-v"]
+    }
+  ]
+}

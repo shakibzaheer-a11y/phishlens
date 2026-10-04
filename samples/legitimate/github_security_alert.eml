@@ -1,0 +1,41 @@
+Received: from out-1.smtp.github.com ([192.30.252.206])
+	by mx.corporate-gateway.com with ESMTP id ghsec01
+	for <developer@corp.internal>; Fri, 02 Oct 2026 10:15:00 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=github.com;
+	s=pf2024; t=1727864100;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+Authentication-Results: mx.corporate-gateway.com;
+	spf=pass (client-ip=192.30.252.206; envelope-from=notifications@github.com);
+	dkim=pass (header.d=github.com);
+	dmarc=pass (action=none) header.from=github.com
+Received-SPF: Pass (mx.corporate-gateway.com: domain of notifications@github.com designates 192.30.252.206 as permitted sender) client-ip=192.30.252.206;
+From: "GitHub Security" <notifications@github.com>
+To: <developer@corp.internal>
+Subject: [GitHub] A new personal access token was generated for your account
+Date: Fri, 02 Oct 2026 10:14:45 +0000
+Message-ID: <github/security/token-gen-99124@github.com>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<head><title>GitHub Security Notification</title></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #24292e;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e4e8; border-radius: 6px;">
+    <h2>Personal access token generated</h2>
+    <p>Hi developer,</p>
+    <p>A new personal access token (classic) with repo scope was generated on your account.</p>
+    <p><strong>Device:</strong> macOS 15.0 (Chrome 128.0.0.0)<br><strong>Location:</strong> San Francisco, CA, USA</p>
+    <p>If you did not generate this token, please visit your security settings immediately to revoke it:</p>
+    <p>
+      <a href="https://github.com/settings/tokens" style="color: #0366d6; text-decoration: none;">https://github.com/settings/tokens</a>
+    </p>
+    <p style="font-size: 12px; color: #586069;">
+      GitHub, Inc. • 88 Colin P Kelly Jr St • San Francisco, CA 94107
+    </p>
+  </div>
+</body>
+</html>

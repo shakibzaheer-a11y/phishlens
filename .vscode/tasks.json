@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🛡️ Start Web Dashboard",
+      "type": "shell",
+      "command": "python run_web.py --port 8080",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "📊 Run ML Benchmark",
+      "type": "shell",
+      "command": "python evaluate.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "🧪 Run Pytest Tests",
+      "type": "shell",
+      "command": "python -m pytest",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

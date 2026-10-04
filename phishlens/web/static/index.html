@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishLens — Email Forensics & Threat Intel Pipeline</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar / Brand Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <h2>PHISH<span>LENS</span></h2>
+          <small>Forensics & Intel v1.0</small>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="tab-overview">📊 Assessment Overview</button>
+        <button class="nav-item" data-tab="tab-headers">✉️ Header & Sender</button>
+        <button class="nav-item" data-tab="tab-urls">🔗 URL & Defang Engine</button>
+        <button class="nav-item" data-tab="tab-attachments">📎 Attachment Hashes</button>
+        <button class="nav-item" data-tab="tab-intel">🌐 Threat Intel Feeds</button>
+        <button class="nav-item" data-tab="tab-ml">🤖 ML Benchmark & Eval</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-indicator">
+          <span class="pulse-dot"></span> Pipeline Active
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Cross-referencing VT, URLhaus, AbuseIPDB & RDAP</p>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar: Demo Scenarios & Upload -->
+      <header class="topbar">
+        <div class="demo-scenarios">
+          <span class="label">Quick Demos:</span>
+          <button class="btn btn-demo" onclick="loadSample('m365_credential_harvest.eml')">🚨 M365 Credential Phish</button>
+          <button class="btn btn-demo" onclick="loadSample('fake_invoice_malware.eml')">⚠️ Invoice Trojan (.pdf.exe)</button>
+          <button class="btn btn-demo" onclick="loadSample('ceo_giftcard_spearphish.eml')">🎭 CEO Spear Phish</button>
+          <button class="btn btn-demo btn-success" onclick="loadSample('github_security_alert.eml')">✅ Legitimate Alert</button>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-outline" id="btn-export-html" onclick="exportHTMLReport()">📄 Export HTML</button>
+          <button class="btn btn-outline" id="btn-export-json" onclick="exportJSONReport()">💾 Export JSON</button>
+        </div>
+      </header>
+
+      <!-- Dropzone Section -->
+      <section class="dropzone-section">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept=".eml" style="display:none">
+          <div class="dropzone-content">
+            <span class="drop-icon">📥</span>
+            <div>
+              <strong>Drag & Drop any .EML file here</strong> or <span class="highlight-link" onclick="document.getElementById('file-input').click()">browse file</span>
+              <p>Instant forensic parsing, IOC extraction & threat feed correlation in seconds</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loading Spinner / Banner -->
+      <div id="loader" class="loader-banner" style="display: none;">
+        <div class="spinner"></div>
+        <span>Analyzing RFC 822 MIME structure, validating SPF/DKIM/DMARC & querying threat feeds...</span>
+      </div>
+
+      <!-- Analysis Results Container -->
+      <div id="results-container" class="results-container" style="display: none;">
+        <!-- Top Metrics Cards -->
+        <div class="metrics-grid">
+          <!-- Card 1: Score & Verdict -->
+          <div class="metric-card" id="card-verdict">
+            <div class="card-label">Forensic Verdict</div>
+            <div class="verdict-badge" id="metric-verdict">MALICIOUS</div>
+            <div class="score-display">
+              <span id="metric-score">85</span><small>/100 Risk Score</small>
+            </div>
+            <div class="speed-pill">⚡ Analyzed in <span id="metric-time">0.42</span>s</div>
+          </div>
+
+          <!-- Card 2: Email Authentication -->
+          <div class="metric-card">
+            <div class="card-label">Email Authentication</div>
+            <div class="auth-grid">
+              <div class="auth-item">
+                <span class="auth-name">SPF</span>
+                <span class="auth-status" id="metric-spf">FAIL</span>
+              </div>
+              <div class="auth-item">
+                <span class="auth-name">DKIM</span>
+                <span class="auth-status" id="metric-dkim">FAIL</span>
+              </div>
+              <div class="auth-item">
+                <span class="auth-name">DMARC</span>
+                <span class="auth-status" id="metric-dmarc">REJECT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Artifact Counts -->
+          <div class="metric-card">
+            <div class="card-label">Extracted Artifacts</div>
+            <div class="counts-grid">
+              <div class="count-box">
+                <span class="num" id="metric-urls-count">0</span>
+                <span class="txt">URLs</span>
+              </div>
+              <div class="count-box">
+                <span class="num" id="metric-atts-count">0</span>
+                <span class="txt">Attachments</span>
+              </div>
+              <div class="count-box">
+                <span class="num" id="metric-hops-count">0</span>
+                <span class="txt">Hops</span>
+              </div>
+              <div class="count-box">
+                <span class="num alert" id="metric-intel-count">0</span>
+                <span class="txt">Intel Hits</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Executive Recommendation Banner -->
+        <div class="recommendation-bar" id="rec-bar">
+          <div class="rec-icon">🛡️</div>
+          <div>
+            <strong>Executive Recommendation:</strong>
+            <span id="rec-text">Immediate quarantine advised. Block sender domain and add IP to firewall blacklist.</span>
+          </div>
+        </div>
+
+        <!-- TAB 1: Overview & Triggered Indicators -->
+        <div class="tab-pane active" id="tab-overview">
+          <div class="section-title">Triggered Threat Indicators (<span id="triggered-count">0</span>)</div>
+          <div class="table-wrapper">
+            <table class="data-table" id="table-rules">
+              <thead>
+                <tr>
+                  <th>Rule ID</th>
+                  <th>Severity</th>
+                  <th>Indicator Name</th>
+                  <th>Forensic Evidence</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-rules"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 2: Header & Sender Forensics -->
+        <div class="tab-pane" id="tab-headers">
+          <div class="section-title">Envelope & Sender Discrepancy Analysis</div>
+          <div class="table-wrapper">
+            <table class="data-table" id="table-sender">
+              <tbody id="tbody-sender"></tbody>
+            </table>
+          </div>
+
+          <div class="section-title" style="margin-top: 1.5rem;">Received Relay Hops (Trace Route)</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Hop #</th>
+                  <th>Relay IP</th>
+                  <th>From MTA</th>
+                  <th>By MTA</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-hops"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 3: URLs & Hyperlinks -->
+        <div class="tab-pane" id="tab-urls">
+          <div class="section-title">Extracted URLs & Phishing Link Mismatch Detection</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Defanged URL</th>
+                  <th>Anchor Display Text</th>
+                  <th>Target Domain</th>
+                  <th>Phishing Flags</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-urls"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 4: Attachments -->
+        <div class="tab-pane" id="tab-attachments">
+          <div class="section-title">Extracted Attachments & Cryptographic Hashes</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Filename</th>
+                  <th>Declared MIME</th>
+                  <th>Size</th>
+                  <th>SHA-256 Hash</th>
+                  <th>Malware Indicators</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-attachments"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 5: Threat Intel Feeds -->
+        <div class="tab-pane" id="tab-intel">
+          <div class="section-title">Cross-Referenced Threat Intelligence Feeds</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Intelligence Feed</th>
+                  <th>Queried IOC</th>
+                  <th>Status</th>
+                  <th>Feed Details & Detections</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-intel"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 6: ML Evaluation Suite -->
+        <div class="tab-pane" id="tab-ml">
+          <div class="section-title">
+            Pipeline Benchmark & Machine Learning Evaluation
+            <button class="btn btn-demo" onclick="runMLEvaluation()" style="margin-left: 1rem;">▶ Run Benchmark Suite</button>
+          </div>
+          <div id="ml-eval-container">
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+              Click 'Run Benchmark Suite' to test the forensic pipeline against the curated dataset of phishing and legitimate emails.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+Received: from mail.corporate.com ([104.244.42.1])
+	by mx.corporate-gateway.com with ESMTP id corpnewsletter01
+	for <team@corp.internal>; Wed, 30 Sep 2026 11:00:00 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp.com;
+	s=corp2025; bh=icp5109jfa=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=abcdefcorp1234567890abcdefcorp1234567890
+Authentication-Results: mx.corporate-gateway.com;
+	spf=pass (client-ip=104.244.42.1; envelope-from=communications@corp.com);
+	dkim=pass (header.d=corp.com);
+	dmarc=pass (action=none) header.from=corp.com
+Received-SPF: Pass (mx.corporate-gateway.com: domain of communications@corp.com designates 104.244.42.1 as permitted sender) client-ip=104.244.42.1;
+From: "Internal Communications" <communications@corp.com>
+To: <all-hands@corp.internal>
+Subject: Quarterly All-Hands Meeting Agenda & Q3 Highlights
+Date: Wed, 30 Sep 2026 10:59:00 +0000
+Message-ID: <20260930105900.corpcomm@corp.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_NextPart_Corp_001"
+
+------=_NextPart_Corp_001
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Team,
+
+Join us this Thursday at 2:00 PM for our global Q3 All-Hands gathering.
+
+Agenda:
+1. Product Engineering milestones
+2. Customer Success review
+3. Open Q&A session with leadership
+
+Please submit your questions in advance on Slido or directly in the team Slack channel.
+Attached is the PDF summary of our Q3 departmental metrics.
+
+Best regards,
+Internal Communications Team
+
+------=_NextPart_Corp_001
+Content-Type: application/pdf; name="Q3_Executive_Summary.pdf"
+Content-Disposition: attachment; filename="Q3_Executive_Summary.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJcfsj6IKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFIKPj4K
+ZW5kb2JqCg==
+------=_NextPart_Corp_001--
